@@ -235,6 +235,21 @@ function DisplayArray()
 
 }
 
+function PayActors()
+{
+  deliveries.forEach(function(delivery){
+    actors.forEach(function(actor){
+      if(delivery.id==actor.deliveryId)
+      {
+        actor.payment.shipper.amount=delivery.price;
+        
+      }
+    })
+
+  });
+
+}
+
 function TotalShippingFees()
 {
 
