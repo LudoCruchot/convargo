@@ -144,6 +144,109 @@ const actors = [{
   }]
 }];
 
-console.log(truckers);
-console.log(deliveries);
-console.log(actors);
+function ShippingPrice()
+// function which calculate the shipping price for each delivery
+{
+  var shippingPrice;
+  var priceVolume;
+  var priceDistance;
+  var volReduction=0;
+  deliveries.forEach(function(delivery) {
+        truckers.forEach(function(truck){
+          // check for the truck that correspond to the delivery
+          if(delivery.truckerId==truck.id){
+
+            // price volume and distance
+            priceVolume=delivery.volume*truck.pricePerVolume;
+            priceDistance=delivery.distance*truck.pricePerKm;
+
+            // 10% discount  
+            if(delivery.volume>25){
+              volReduction=50;
+            }
+            else if (delivery.volume>10) {
+              volReduction=30;
+            }
+            else if (delivery.volume>5) {
+              volReduction=10;
+            }
+
+            if(volReduction!=0){
+              priceVolume=priceVolume-((priceVolume*volReduction)/100);
+            }
+
+            shippingPrice=priceVolume+priceDistance;
+
+            delivery.price=shippingPrice;
+          }
+        });
+        //console.log(sPrice);
+    });
+  
+
+}
+
+function Commission()
+// function that calculate the commission for each delivery
+{
+  var com;
+  var percentCommission=0.3;
+  var insurancePart;
+  var treasuryPart;
+  var convargoPart;
+
+  deliveries.forEach(function(delivery){
+    com=delivery.price*percentCommission;
+    delivery.price=delivery.price*(1-percentCommission);
+
+    insurancePart=com/2;
+    delivery.commission.insurance=insurancePart;
+
+    treasuryPart=delivery.distance/500;
+    delivery.commission.treasury=treasuryPart;
+
+    convargoPart=com-(insurancePart+treasuryPart);
+    delivery.commission.convargo=convargoPart;
+  });
+
+}
+
+function Deductible()
+{
+  var deductibleCost;
+  deliveries.forEach(function(delivery){
+    if(delivery.deductibleReduction==true)
+    {
+      deductibleCost=delivery.volume;
+      delivery.price+=deductibleCost;
+      delivery.commission.convargo+=deductibleCost;
+    }
+
+  });
+}
+
+function DisplayArray()
+{
+  deliveries.forEach(function(delivery){
+    console.log(delivery);
+  });
+
+  //console.log(deliveries);
+
+}
+
+function TotalShippingFees()
+{
+
+ShippingPrice();
+Commission();
+Deductible();
+}
+
+TotalShippingFees();
+
+DisplayArray();
+
+//console.log(truckers);
+//console.log(deliveries);
+//console.log(actors);
