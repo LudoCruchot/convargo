@@ -160,13 +160,13 @@ function ShippingPrice()
             priceVolume=delivery.volume*truck.pricePerVolume;
             priceDistance=delivery.distance*truck.pricePerKm;
 
-            // 10% discount  
+            // 50% discount  
             if(delivery.volume>25){
               volReduction=50;
-            }
+            } // 30% discount 
             else if (delivery.volume>10) {
               volReduction=30;
-            }
+            } // 10% discount
             else if (delivery.volume>5) {
               volReduction=10;
             }
@@ -180,7 +180,6 @@ function ShippingPrice()
             delivery.price=shippingPrice;
           }
         });
-        //console.log(sPrice);
     });
   
 
@@ -212,6 +211,7 @@ function Commission()
 }
 
 function Deductible()
+// function that calculate the commission for each delivery
 {
   var deductibleCost;
   deliveries.forEach(function(delivery){
@@ -225,10 +225,10 @@ function Deductible()
   });
 }
 
-function DisplayArray()
+function DisplayArray(array)
 {
-  deliveries.forEach(function(delivery){
-    console.log(delivery);
+  array.forEach(function(element){
+    console.log(element);
   });
 
   //console.log(deliveries);
@@ -238,16 +238,36 @@ function DisplayArray()
 function PayActors()
 {
   deliveries.forEach(function(delivery){
+    var com=delivery.price-(delivery.commission.insurance+delivery.commission.treasury+delivery.commission.convargo);
+
     actors.forEach(function(actor){
       if(delivery.id==actor.deliveryId)
       {
-        actor.payment.shipper.amount=delivery.price;
-        
+        actor.payment.forEach(function(pmt){
+          if(pmt.who=="shipper")
+          {
+            pmt.amount=delivery.price;
+          }
+          if(pmt.who=="trucker")
+          {
+            pmt.amount=com;
+          }
+          if(pmt.who=="insurance")
+          {
+            pmt.amount=delivery.commission.insurance;
+          }
+          if(pmt.who=="treasury")
+          {
+            pmt.amount=delivery.commission.treasury;
+          }
+          if(pmt.who=="convargo")
+          {
+            pmt.amount=delivery.commission.convargo;
+          }
+        });
       }
-    })
-
+    });
   });
-
 }
 
 function TotalShippingFees()
@@ -259,9 +279,7 @@ Deductible();
 }
 
 TotalShippingFees();
+PayActors();
 
-DisplayArray();
-
-//console.log(truckers);
-//console.log(deliveries);
-//console.log(actors);
+DisplayArray(deliveries);
+DisplayArray(actors);
